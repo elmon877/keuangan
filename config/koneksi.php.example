@@ -1,0 +1,9 @@
+<?php
+// Copy file ini menjadi koneksi.php dan isi dengan data asli kamu
+$host = "localhost";
+$user = "root";
+$pass = ""; 
+$db   = "db_keuangan";
+
+$koneksi = mysqli_connect($host, $user, $pass, $db);
+?>
