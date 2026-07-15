@@ -6,7 +6,7 @@ error_reporting(E_ALL);
 // 1. PENGATURAN KONEKSI DATABASE
 $host = "sql103.infinityfree.com";
 $user = "if0_42410902";
-$pass = "elmon22072007";
+$pass = "isi pasword nya";
 $db   = "if0_42410902_Fisclux";
 
 $koneksi = mysqli_connect($host, $user, $pass, $db);
