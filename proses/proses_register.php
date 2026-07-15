@@ -1,9 +1,13 @@
 <?php
+// Aktifkan error reporting untuk mempermudah tracking jika ada error lain
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 // 1. PENGATURAN KONEKSI DATABASE
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db   = "db_keuangan"; // Sudah diubah ke database kamu
+$host = "sql103.infinityfree.com";
+$user = "if0_42410902";
+$pass = "elmon22072007";
+$db   = "if0_42410902_Fisclux";
 
 $koneksi = mysqli_connect($host, $user, $pass, $db);
 
@@ -14,9 +18,14 @@ if (!$koneksi) {
 
 // Memastikan data dikirim via method POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Ambil data dari form dan hapus spasi di awal/akhir input
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
+
+    // Cek apakah input kosong
+    if (empty($username) || empty($password)) {
+        header("Location: ../register.php?pesan=kosong");
+        exit();
+    }
 
     // 2. CEK APAKAH USERNAME SUDAH TERDAFTAR
     $query_cek = "SELECT id FROM users WHERE username = ?";
@@ -25,7 +34,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_stmt_execute($stmt_cek);
     mysqli_stmt_store_result($stmt_cek);
     
-    // Jika username sudah ada di database
     if (mysqli_stmt_num_rows($stmt_cek) > 0) {
         mysqli_stmt_close($stmt_cek);
         header("Location: ../register.php?pesan=username_ada");
@@ -33,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     mysqli_stmt_close($stmt_cek);
 
-    // 3. ENKRIPSI PASSWORD (MENGGUNAKAN BCRYPT)
+    // 3. ENKRIPSI PASSWORD
     $password_hashed = password_hash($password, PASSWORD_DEFAULT);
 
     // 4. INSERT USER BARU KE DATABASE
@@ -43,17 +51,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     if (mysqli_stmt_execute($stmt_insert)) {
         mysqli_stmt_close($stmt_insert);
-        // Registrasi berhasil, kembali ke register.php dengan status sukses
         header("Location: ../register.php?pesan=sukses");
         exit();
     } else {
         mysqli_stmt_close($stmt_insert);
-        // Jika terjadi error saat query eksekusi
         header("Location: ../register.php?pesan=gagal");
         exit();
     }
 } else {
-    // Jika file diakses langsung tanpa form POST, tendang balik ke register.php
     header("Location: ../register.php");
     exit();
 }
