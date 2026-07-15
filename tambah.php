@@ -1,3 +1,11 @@
+<?php
+session_start();
+// Proteksi: Jika belum login, paksa balik ke halaman login
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
