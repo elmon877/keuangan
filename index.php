@@ -1,30 +1,37 @@
 <?php
 session_start();
 
-if(!isset($_SESSION['username'])) {
+// Cek apakah session username dan user_id sudah ada
+if(!isset($_SESSION['username']) || !isset($_SESSION['user_id'])) {
     header("location:login.php");
     exit;
 }
 
 include 'config/koneksi.php';
 
-$query = "SELECT * FROM transaksi ORDER BY id DESC";
+// Ambil ID user dari session dan pastikan aman dari SQL Injection
+$user_id = mysqli_real_escape_string($koneksi, $_SESSION['user_id']);
+
+// 1. Ambil data transaksi HANYA untuk user yang sedang login
+$query = "SELECT * FROM transaksi WHERE user_id = '$user_id' ORDER BY id DESC";
 $ambil_data = mysqli_query($koneksi, $query);
 
-$query_masuk = "SELECT SUM(jumlah) AS total FROM transaksi WHERE jenis='pemasukan'";
+// 2. Hitung total pemasukan user tersebut
+$query_masuk = "SELECT SUM(jumlah) AS total FROM transaksi WHERE jenis='pemasukan' AND user_id = '$user_id'";
 $hasil_masuk = mysqli_query($koneksi, $query_masuk);
 $data_masuk  = mysqli_fetch_array($hasil_masuk);
 $total_pemasukan = $data_masuk['total'] ?? 0;
 
-$query_keluar = "SELECT SUM(jumlah) AS total FROM transaksi WHERE jenis='pengeluaran'";
+// 3. Hitung total pengeluaran user tersebut
+$query_keluar = "SELECT SUM(jumlah) AS total FROM transaksi WHERE jenis='pengeluaran' AND user_id = '$user_id'";
 $hasil_keluar = mysqli_query($koneksi, $query_keluar);
 $data_keluar  = mysqli_fetch_array($hasil_keluar);
 $total_pengeluaran = $data_keluar['total'] ?? 0;
 
 $sisa_saldo = $total_pemasukan - $total_pengeluaran;
 
-// Count total rows
-$query_count = "SELECT COUNT(*) AS total FROM transaksi";
+// 4. Hitung total baris transaksi user tersebut
+$query_count = "SELECT COUNT(*) AS total FROM transaksi WHERE user_id = '$user_id'";
 $hasil_count = mysqli_query($koneksi, $query_count);
 $data_count  = mysqli_fetch_array($hasil_count);
 $total_transaksi = $data_count['total'] ?? 0;
@@ -551,7 +558,7 @@ $total_transaksi = $data_count['total'] ?? 0;
         </div>
         
         <!-- Pastikan file 'proses/tambah_transaksi.php' sudah kamu buat untuk menangani $_POST -->
-      <form action="/proses/tambah_transaksi.php" method="POST">
+        <form action="proses/tambah_transaksi.php" method="POST">
             <div class="form-group">
                 <label class="form-label">Nama Transaksi</label>
                 <input type="text" name="nama" class="form-input" placeholder="Contoh: Gaji, Makan Siang, Listrik" required>
