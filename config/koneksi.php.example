@@ -1,9 +1,18 @@
 <?php
-// Copy file ini menjadi koneksi.php dan isi dengan data asli kamu
-$host = "localhost";
-$user = "root";
-$pass = ""; 
-$db   = "db_keuangan";
+// Aktifkan laporan error agar kita tahu jika ada masalah
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
+$host = "sql103.infinityfree.com";
+$user = "if0_42410902";
+$pass = "isi pasword sendiri";
+$db   = "if0_42410902_Fisclux";
+
+// Menghubungkan PHP ke database MySQL
 $koneksi = mysqli_connect($host, $user, $pass, $db);
+
+// Jika koneksi gagal, hentikan aplikasi dan tampilkan error
+if (!$koneksi) {
+    die("Koneksi ke database gagal: " . mysqli_connect_error());
+}
 ?>
